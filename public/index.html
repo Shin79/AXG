@@ -1,300 +1,401 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CRM AXG</title>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="shortcut icon" href="about:blank">
-    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-    <style>
-        body {
-            padding-top: 60px;
-        }
-    </style>
-    <script>
-        $(function() {
-            $("#phoneChangerForm").submit(function(event) {
-                event.preventDefault();
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Mobile App LEGARANT</title>
+	<!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!--<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>-->
+	<script src="//code.jquery.com/jquery-3.5.1.min.js"></script>
+	<style>
+		body {
+			padding-top: 60px;
+		}
+	</style>
+	<script>
+		var contactId;
 
-                var errorMessage = $("#errorMessage");
-                var error = $("#error");
-                error.hide();
+		$(function () {
+			var contactInformationForm = $("#contactInformationForm");
+			contactInformationForm.hide();
+			var contractsList = $("#contractsList");
+			contractsList.hide();
+			var productsList = $("#productsList");
+			productsList.hide();
+		});
 
-                $("#message").hide();
+		$(function() {
+			$("#authenticationForm").submit(function(event) {
+				console.log('Dans authent');
+				event.preventDefault();
+				var user = $("#user").val();
+				var pwd = $("#pwd").val();
+				var errorAuthentMessage = $("#errorAuthentMessage");
+				var errorAuthent = $("#errorAuthent");
+				errorAuthent.hide();
+				$("#messageAuthent").hide();
 
-                var firstName = $("#firstName").val();
-                var lastName = $("#lastName").val();
-                var email = $("#email").val();
-                var phone = $("#phone").val();
+				console.log('User : ' + user);
+				console.log('Pwd : ' + pwd);
+				if (user.length == 0 || pwd.length == 0) {
+					errorAuthentMessage.text("User and Password fields are required.");
+					errorAuthent.show();
+				} else {
+					$.ajax({
+						url: event.target.action,
+						method: event.target.method,
+						data: JSON.stringify({
+							user: user,
+							pwd: pwd,
+						}),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						success: function(data) {
+							console.log('data:'+JSON.stringify(data));
+							$("#messageAuthentMessage").text("Authentication success !");
+							$("#messageAuthent").show();
+							var authenticationForm = $("#authenticationForm");
+							authenticationForm.delay(800).slideUp(300);
+							initAndShowContactForm($("#contactInformationForm"), data);
+							//var contactInformationForm = $("#contactInformationForm");
+							//contactInformationForm.show().slideUp(300).fadeIn(400);
+							//contactInformationForm.show().delay(1100).slideUp(300);
+						},
+						error: function(err) {
+							errorAuthentMessage.text(err.responseJSON.error);
+							errorAuthent.show();
+						}
+					})
+				}
+			});
+		});
 
-                if (firstName.length == 0 || lastName.length == 0 || email.length == 0 || phone.length == 0) {
-                    errorMessage.text("All of the fields are required.");
-                    error.show();
-                }
-                else {
-                    $.ajax({
-                        url: event.target.action,
-                        method: event.target.method,
-                        data: JSON.stringify({
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            phone: phone
-                        }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function(data) {
-                            $("#firstName").val("");
-                            $("#lastName").val("");
-                            $("#email").val("");
-                            $("#phone").val("");
-                            $("#messageMessage").text("Record updated!");
-                            $("#message").show();
-                        },
-                        error: function(err) {
-                            errorMessage.text(err.responseJSON.error);
-                            error.show();
-                        }
-                    })
-                }
-            });
-        });
+		function initAndShowContactForm($param, $data) {
+			$param.delay(1100).fadeIn(400);
+			$("#firstName").val($data.rows[0].firstname);
+			$("#lastName").val($data.rows[0].lastname);
+			$("#email").val($data.rows[0].email);
+			$("#phone").val($data.rows[0].phone);
+			contactId = $data.rows[0].sfid;
+			console.log('ContactId:'+contactId);
+			// then show Contract List
+			var contractsList = $("#contractsList");
+			contractsList.delay(1200).fadeIn(400);
+			var messageGetContracts = $("#messageGetContracts");
+			var errorGetContracts = $("#errorGetContracts");
+			messageGetContracts.hide();
+			errorGetContracts.hide();
+			// then show Product List
+			var productsList = $("#productsList");
+			productsList.delay(1300).fadeIn(400);
+			var messageGetProducts = $("#messageGetProducts");
+			var errorGetProducts = $("#errorGetProducts");
+			messageGetProducts.hide();
+			errorGetProducts.hide();
+		}
 
-    </script>
+		$(function() {
+			$("#contactInformationForm").submit(function(event) {
+				console.log('Dans phone');
+				event.preventDefault();
 
-    <!-- CONTRACT LIST SCRIPT -->
-    <script>
-        $(function() {
-            $("#getContractForm").submit(function(event) {
-                event.preventDefault();
+				var errorMessage = $("#errorMessage");
+				var error = $("#error");
+				error.hide();
 
-                var errorMessage = $("#errorMessage");
-                var error = $("#error");
-                error.hide();
+				$("#message").hide();
 
-                $("#messageC").hide();
+				var firstName = $("#firstName").val();
+				console.log('FirstName : ' + firstName);
+				var lastName = $("#lastName").val();
+				var email = $("#email").val();
+				var phone = $("#phone").val();
 
-                $.ajax({
-                    url: event.target.action,
-                    method: event.target.method,
-                    
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(data) {
-                        console.log('#### sucessful data retrieve string' + JSON.stringify(data));
+				if (firstName.length == 0 || lastName.length == 0 || email.length == 0 || phone.length == 0) {
+					errorMessage.text("All of the fields are required.");
+					error.show();
+				}
+				else {
+					$.ajax({
+						url: event.target.action,
+						method: event.target.method,
+						data: JSON.stringify({
+							firstName: firstName,
+							lastName: lastName,
+							email: email,
+							phone: phone
+						}),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						success: function(data) {
+							/*$("#firstName").val("");
+							$("#lastName").val("");
+							$("#email").val("");
+							$("#phone").val("");*/
+							$("#messageMessage").text("Record updated!");
+							$("#message").show();
+						},
+						error: function(err) {
+							errorMessage.text(err.responseJSON.error);
+							error.show();
+						}
+					})
+				}
+			});
+		});
 
-                         $.each(data.rows, function(index, row) {
-                            console.log('#### ROWS ' + row);
+		$(document).on("click", "#buttonGetContracts", function(event) {
+			event.preventDefault();
+			var messageGetContractsMessage = $("#messageGetContractsMessage");
+			var errorGetContractsMessage = $("#errorGetContractsMessage");
+			console.log('Dans contracsList via button');
+			if (contactId != undefined && contactId != "") {
+				$.ajax({
+					url: "/contracts",
+					method: "post",
+					data: JSON.stringify({
+						contactId: contactId,
+					}),
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function(data) {
+						console.log('data:'+JSON.stringify(data));
+						// Populate contracts table
+						var bodyContracts = $("#bodyContracts");
+						$.each(data.rows, function() {
+							var lineContent = '<tr data-id="' + this.id + '">';
+							lineContent += '<td>' + this.name + '</td>';
+							lineContent += '<td>' + this.product_assu__c + '</td></tr>';
+							bodyContracts.append(lineContent);
+						});
+						// Message on footer and disable button
+						var messageGetContractsMessage = $("#messageGetContractsMessage");
+						messageGetContractsMessage.text("Success");
+						var messageGetContracts = $("#messageGetContracts");
+						messageGetContracts.show();
+						$('#buttonGetContracts').prop('disabled', true);
+					},
+					error: function(err) {
+						// Message on footer
+						var errorGetContractsMessage = $("#errorGetContractsMessage");
+						errorGetContractsMessage.text(err.responseJSON.error);
+						var errorGetContracts = $("#errorGetContracts");
+						errorGetContracts.show();
+					}
+				})
+			}
+		});
 
-                            var newRow = $("<tr>");
-                                var cols = "";
-                               
-                                var contractName = $("#name").val();
-                                var productName = $("#product_name__c").val();
-                                cols += '<td> ' + row.name + '</td>';
-                                cols += '<td> ' + row.product_name__c + '</td>';
-                                newRow.append(cols);
-                                $("#tableData tbody").append(newRow);
-                         });
+		$(document).on("click", "#buttonGetProducts", function(event) {
+			event.preventDefault();
+			var messageGetProductsMessage = $("#messageGetProductsMessage");
+			var errorGetProductsMessage = $("#errorGetProductsMessage");
+			console.log('Dans ProductsList via button');
+			$.ajax({
+				url: "/products",
+				method: "post",
+				data: JSON.stringify({}),
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function(data) {
+					console.log('data:'+JSON.stringify(data));
+					// Populate products table
+					var bodyProducts = $("#bodyProducts");
+					$.each(data.rows, function() {
+						var lineContent = '<tr data-id="' + this.id + '"><td>' + this.name + '</td></tr>';
+						bodyProducts.append(lineContent);
+					});
+					// Message on footer and disable button
+					var messageGetProductsMessage = $("#messageGetProductsMessage");
+					messageGetProductsMessage.text("Success");
+					var messageGetProducts = $("#messageGetProducts");
+					messageGetProducts.show();
+					$('#buttonGetProducts').prop('disabled', true);
+				},
+				error: function(err) {
+					// Message on footer
+					var errorGetProductsMessage = $("#errorGetProductsMessage");
+					errorGetProductsMessage.text(err.responseJSON.error);
+					var errorGetProducts = $("#errorGetProducts");
+					errorGetProducts.show();
+				}
+			})
+		});
 
-                        $("#messageContract").text("Success!");
-                        $("#messageC").show();
-                    },
-                    error: function(err) {
-                        errorMessage.text(err.responseJSON.error);
-                        error.show();
-                    }
-                })
-                
-            });
-        });
-
-    </script>
-
-    <!-- PRODUCT LIST SCRIPT -->
-    <script>
-        $(function() {
-            $("#getProductForm").submit(function(event) {
-                event.preventDefault();
-
-                var errorMessage = $("#errorMessage");
-                var error = $("#error");
-                error.hide();
-
-                $("#messageP").hide();
-
-                $.ajax({
-                    url: event.target.action,
-                    method: event.target.method,
-                    
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function(data) {
-                        console.log('#### sucessful data retrieve string' + JSON.stringify(data));
-
-                        $.each(data.rows, function(index, row) {
-                            var newRow = $("<tr>");
-                                var cols = "";
-                               
-                                var productName = $("#name").val();
-                                cols += '<td> ' + row.name + '</td>';
-                                newRow.append(cols);
-                                $("#tableProduct tbody").append(newRow);
-                        });
-
-                        $("#messageProduct").text("Success!");
-                        $("#messageP").show();
-                    },
-                    error: function(err) {
-                        errorMessage.text(err.responseJSON.error);
-                        error.show();
-                    }
-                })
-                
-            });
-        });
-
-    </script>
-
+	</script>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">Contact Information</a>
-            </div>
-        </div>
-    </nav>
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/">Mobile App LEGARANT</a>
+			</div>
+		</div>
+	</nav>
 
-    <!-- CONTACT INFORMATION-->
-    <div class="container">
-        <form id="phoneChangerForm" action="/update" method="post" style="width: 400px">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Contact Information</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="For verification" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="For verification" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="For verification" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="New Phone Number" required>
-                    </div>
-                </div>
-                <div class="panel-footer">
-                    <div id="message" class="alert alert-info" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        <span id="messageMessage"></span>
-                    </div>
-                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Error:</span>
-                        <span id="errorMessage"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update Contact</button>
-                </div>
-            </div>
-        </form>
-    </div>
+	<div class="container">
+		<form id="authenticationForm" action="/contact/authent" method="post" style="width: 400px">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-md-2">
+							<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-lock-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+								<path fill-rule="evenodd" d="M5.187 1.025C6.23.749 7.337.5 8 .5c.662 0 1.77.249 2.813.525a61.09 61.09 0 0 1 2.772.815c.528.168.926.623 1.003 1.184.573 4.197-.756 7.307-2.367 9.365a11.191 11.191 0 0 1-2.418 2.3 6.942 6.942 0 0 1-1.007.586c-.27.124-.558.225-.796.225s-.526-.101-.796-.225a6.908 6.908 0 0 1-1.007-.586 11.192 11.192 0 0 1-2.417-2.3C2.167 10.331.839 7.221 1.412 3.024A1.454 1.454 0 0 1 2.415 1.84a61.11 61.11 0 0 1 2.772-.815zm3.328 6.884a1.5 1.5 0 1 0-1.06-.011.5.5 0 0 0-.044.136l-.333 2a.5.5 0 0 0 .493.582h.835a.5.5 0 0 0 .493-.585l-.347-2a.5.5 0 0 0-.037-.122z"/>
+							</svg>
+						</div>
+						<div class="col-md-10">
+							<h3 class="panel-title">Authentication</h3>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label for="user">Email</label>
+						<input type="email" class="form-control" id="user" placeholder="Enter your email" required>
+					</div>
+					<div class="form-group">
+						<label for="pwd">Password</label>
+						<input type="password" class="form-control" id="pwd" placeholder="Enter your password" required>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div id="messageAuthent" class="alert alert-info" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+						<span id="messageAuthentMessage"></span>
+					</div>
+					<div id="errorAuthent" class="alert alert-danger" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span class="sr-only">Error:</span>
+						<span id="errorAuthentMessage"></span>
+					</div>
+					<button type="submit" class="btn btn-primary">Validate</button>
+				</div>
+			</div>
+		</form>
 
-    <!-- CONTRACT LIST-->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">Contract Information</a>
-            </div>
-        </div>
-    </nav>
+		<form id="contactInformationForm" action="/update" method="post" style="width: 400px">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-md-2">
+							<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-person-lines-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+								<path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7 1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm2 9a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5z"/>
+							</svg>
+						</div>
+						<div class="col-md-10">
+							<h3 class="panel-title">Update Your Contact Information</h3>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label for="firstName">First Name</label>
+						<input type="text" class="form-control" id="firstName" readonly>
+					</div>
+					<div class="form-group">
+						<label for="lastName">Last Name</label>
+						<input type="text" class="form-control" id="lastName" readonly>
+					</div>
+					<div class="form-group">
+						<label for="email">Email</label>
+						<input type="email" class="form-control" id="email" readonly>
+					</div>
+					<div class="form-group">
+						<label for="phone">Phone</label>
+						<input type="tel" class="form-control" id="phone" placeholder="New Phone Number" required>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div id="message" class="alert alert-info" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+						<span id="messageMessage"></span>
+					</div>
+					<div id="error" class="alert alert-danger" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span class="sr-only">Error:</span>
+						<span id="errorMessage"></span>
+					</div>
+					<button type="submit" class="btn btn-primary">Update Contact Information</button>
+				</div>
+			</div>
+		</form>
 
-    <div class="container">
-        <form id="getContractForm" action="/getContracts" method="get" style="width: 400px">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Contract List</h3>
-                </div>
-                <div id="panel" class="panel-body">
-                    <!-- display retrieve contracts result-->
-                    <table id="tableData" class="table table-fixed">
-                        <tbody class="tbody">
-                            <tr>
-                                <th>Contract Name</th>
-                                <th>Product Name</th>
-                            </tr>
+		<div id="contractsList" class="panel panel-default" style="width: 400px">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-md-2">
+						<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-file-earmark-text-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+							<path fill-rule="evenodd" d="M2 3a2 2 0 0 1 2-2h5.293a1 1 0 0 1 .707.293L13.707 5a1 1 0 0 1 .293.707V13a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3zm7 2V2l4 4h-3a1 1 0 0 1-1-1zM4.5 8a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5z"/>
+						</svg>
+					</div>
+					<div class="col-md-10">
+						<h3 class="panel-title">Contracts List</h3>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<th scope="col">Contract Name</th>
+						<th scope="col">Product</th>
+					</thead>
+					<tbody id="bodyContracts">
+					</tbody>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<div id="messageGetContracts" class="alert alert-info" role="alert" style="display: none;">
+					<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+					<span id="messageGetContractsMessage"></span>
+				</div>
+				<div id="errorGetContracts" class="alert alert-danger" role="alert" style="display: none;">
+					<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+					<span class="sr-only">Error:</span>
+					<span id="errorGetContractsMessage"></span>
+				</div>
+				<button type="button" id="buttonGetContracts" class="btn btn-primary">Retrieve contracts</button>
+			</div>
+		</div>
 
-                        </tbody>
-                    </table>
-                    
-                </div>
-                <div id="p-footer" class="panel-footer">
-                    <div id="messageC" class="alert alert-info" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        <span id="messageContract"></span>
-                    </div>
-
-
-                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Error:</span>
-                        <span id="errorMessage"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Retrieve Contracts</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">CRM AXG</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- PRODUCT LIST-->
-    <div class="container">
-        <form id="getProductForm" action="/getProducts" method="get" style="width: 400px">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Product List</h3>
-                </div>
-                <div id="panel" class="panel-body">
-                    <!-- display retrieve contracts result-->
-                    <table id="tableProduct" class="table fixed-product">
-                        <tbody class="tbody">
-                            <tr>
-                                <th>Product Name</th>
-                            </tr>
-
-                        </tbody>
-                    </table>
-                </div>
-                <div class="panel-footer">
-                    <div id="messageP" class="alert alert-info" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                        <span id="messageProduct"></span>
-                    </div>
-                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
-                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                        <span class="sr-only">Error:</span>
-                        <span id="errorMessage"></span>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Retrieve Products</button>
-                </div>
-            </div>
-        </form>
-    </div>
+		<div id="productsList" class="panel panel-default" style="width: 400px">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-md-2">
+						<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-file-earmark-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+							<path d="M4 1h5v1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6h1v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2z"/>
+							<path d="M9 4.5V1l5 5h-3.5A1.5 1.5 0 0 1 9 4.5z"/>
+							<path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+						</svg>
+					</div>
+					<div class="col-md-10">
+						<h3 class="panel-title">Products List</h3>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<th scope="col">Product Name</th>
+					</thead>
+					<tbody id="bodyProducts">
+					</tbody>
+				</table>
+			</div>
+			<div class="panel-footer">
+				<div id="messageGetProducts" class="alert alert-info" role="alert" style="display: none;">
+					<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+					<span id="messageGetProductsMessage"></span>
+				</div>
+				<div id="errorGetProducts" class="alert alert-danger" role="alert" style="display: none;">
+					<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+					<span class="sr-only">Error:</span>
+					<span id="errorGetProductsMessage"></span>
+				</div>
+				<button type="button" id="buttonGetProducts" class="btn btn-primary">Retrieve products</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
