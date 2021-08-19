@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CRM AXG</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <style>
+        body {
+            padding-top: 60px;
+        }
+    </style>
+    <script>
+        $(function() {
+            $("#phoneChangerForm").submit(function(event) {
+                event.preventDefault();
+
+                var errorMessage = $("#errorMessage");
+                var error = $("#error");
+                error.hide();
+
+                $("#message").hide();
+
+                var firstName = $("#firstName").val();
+                var lastName = $("#lastName").val();
+                var email = $("#email").val();
+                var phone = $("#phone").val();
+
+                if (firstName.length == 0 || lastName.length == 0 || email.length == 0 || phone.length == 0) {
+                    errorMessage.text("All of the fields are required.");
+                    error.show();
+                }
+                else {
+                    $.ajax({
+                        url: event.target.action,
+                        method: event.target.method,
+                        data: JSON.stringify({
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email,
+                            phone: phone
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function(data) {
+                            $("#firstName").val("");
+                            $("#lastName").val("");
+                            $("#email").val("");
+                            $("#phone").val("");
+                            $("#messageMessage").text("Record updated!");
+                            $("#message").show();
+                        },
+                        error: function(err) {
+                            errorMessage.text(err.responseJSON.error);
+                            error.show();
+                        }
+                    })
+                }
+            });
+        });
+
+    </script>
+
+    <!-- CONTRACT LIST SCRIPT -->
+    <script>
+        $(function() {
+            $("#getContractForm").submit(function(event) {
+                event.preventDefault();
+
+                var errorMessage = $("#errorMessage");
+                var error = $("#error");
+                error.hide();
+
+                $("#messageC").hide();
+
+                $.ajax({
+                    url: event.target.action,
+                    method: event.target.method,
+                    
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log('#### sucessful data retrieve string' + JSON.stringify(data));
+
+                         $.each(data.rows, function(index, row) {
+                            console.log('#### ROWS ' + row);
+
+                            var newRow = $("<tr>");
+                                var cols = "";
+                               
+                                var contractName = $("#name").val();
+                                var productName = $("#product_name__c").val();
+                                cols += '<td> ' + row.name + '</td>';
+                                cols += '<td> ' + row.product_name__c + '</td>';
+                                newRow.append(cols);
+                                $("#tableData tbody").append(newRow);
+                         });
+
+                        $("#messageContract").text("Success!");
+                        $("#messageC").show();
+                    },
+                    error: function(err) {
+                        errorMessage.text(err.responseJSON.error);
+                        error.show();
+                    }
+                })
+                
+            });
+        });
+
+    </script>
+
+    <!-- PRODUCT LIST SCRIPT -->
+    <script>
+        $(function() {
+            $("#getProductForm").submit(function(event) {
+                event.preventDefault();
+
+                var errorMessage = $("#errorMessage");
+                var error = $("#error");
+                error.hide();
+
+                $("#messageP").hide();
+
+                $.ajax({
+                    url: event.target.action,
+                    method: event.target.method,
+                    
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        console.log('#### sucessful data retrieve string' + JSON.stringify(data));
+
+                        $.each(data.rows, function(index, row) {
+                            var newRow = $("<tr>");
+                                var cols = "";
+                               
+                                var productName = $("#name").val();
+                                cols += '<td> ' + row.name + '</td>';
+                                newRow.append(cols);
+                                $("#tableProduct tbody").append(newRow);
+                        });
+
+                        $("#messageProduct").text("Success!");
+                        $("#messageP").show();
+                    },
+                    error: function(err) {
+                        errorMessage.text(err.responseJSON.error);
+                        error.show();
+                    }
+                })
+                
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Contact Information</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTACT INFORMATION-->
+    <div class="container">
+        <form id="phoneChangerForm" action="/update" method="post" style="width: 400px">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Contact Information</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="For verification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="For verification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" placeholder="For verification" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="New Phone Number" required>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div id="message" class="alert alert-info" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        <span id="messageMessage"></span>
+                    </div>
+                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <span id="errorMessage"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Contact</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- CONTRACT LIST-->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Contract Information</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <form id="getContractForm" action="/getContracts" method="get" style="width: 400px">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Contract List</h3>
+                </div>
+                <div id="panel" class="panel-body">
+                    <!-- display retrieve contracts result-->
+                    <table id="tableData" class="table table-fixed">
+                        <tbody class="tbody">
+                            <tr>
+                                <th>Contract Name</th>
+                                <th>Product Name</th>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                    
+                </div>
+                <div id="p-footer" class="panel-footer">
+                    <div id="messageC" class="alert alert-info" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        <span id="messageContract"></span>
+                    </div>
+
+
+                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <span id="errorMessage"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Retrieve Contracts</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">CRM AXG</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PRODUCT LIST-->
+    <div class="container">
+        <form id="getProductForm" action="/getProducts" method="get" style="width: 400px">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Product List</h3>
+                </div>
+                <div id="panel" class="panel-body">
+                    <!-- display retrieve contracts result-->
+                    <table id="tableProduct" class="table fixed-product">
+                        <tbody class="tbody">
+                            <tr>
+                                <th>Product Name</th>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <div id="messageP" class="alert alert-info" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        <span id="messageProduct"></span>
+                    </div>
+                    <div id="error" class="alert alert-danger" role="alert" style="display: none;">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <span id="errorMessage"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Retrieve Products</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
