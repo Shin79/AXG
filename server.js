@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 
 app.post('/update', function(req, res) {
     pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
+        console.log(process.env.DATABASE_URL);
         // watch for any connect issues
         if (err) console.log(err);
         conn.query(
