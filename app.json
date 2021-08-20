@@ -1,0 +1,9 @@
+{
+    "name" : "Mobile app Legarant",
+    "description":"Application mobile pour Legarant",
+    "repository":"https://github.com/Shin79/AXG.git",
+    "env":{
+        "description":"Require SSL for Postgres",
+        "value":"require"
+    }
+}

@@ -91,6 +91,7 @@ app.get('/getProducts', function(req, res) {
     });
 });
 
-app.listen(app.get('port'), function () {
-    console.log('Express server listening on port ' + app.get('port'));
+const server = app.listen(process.env.PORT || 3000, () => {
+    const port = server.address().port;
+    console.log(`Express server listening on port ${port}` );
 });
