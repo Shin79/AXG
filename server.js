@@ -44,7 +44,6 @@ app.post('/update', function(req, res) {
 });
 
 app.get('/getContracts', function(req, res) {
-
     pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
         // watch for any connect issues
         if (err) {
@@ -67,8 +66,7 @@ app.get('/getContracts', function(req, res) {
 });
 
 app.get('/getProducts', function(req, res) {
-
-    pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
+        pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
 
         // watch for any connect issues
         if (err) {
