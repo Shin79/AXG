@@ -43,51 +43,7 @@ app.post('/update', function(req, res) {
     });
 });
 
-app.get('/getContracts', function(req, res) {
-    pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
-        // watch for any connect issues
-        if (err) {
-            console.log(err);
-            return;
-        }
-        conn.query('SELECT Name, Product_Name__c FROM salesforce.Contract WHERE Product__c IS NOT NULL',
-        function(err, result) {
-            console.log(result)
-            if (err) {
-                res.status(400).json({error: err.message});
-            }
-            else {
-                // Need to display 'Success!'
-                res.json(result);
-            }
-        });
-        
-    });
-});
 
-app.get('/getProducts', function(req, res) {
-        pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
-
-        // watch for any connect issues
-        if (err) {
-            console.log(err);
-            return;
-        }
-
-        conn.query('SELECT Name FROM salesforce.Product2 WHERE Name LIKE \'%Insurance%\' ',
-        function(err, result) {
-            console.log(result)
-            if (err) {
-                res.status(400).json({error: err.message});
-            }
-            else {
-                // Need to display 'Success!'
-                res.json(result);
-            }
-        });
-        
-    });
-});
 
 const server = app.listen(process.env.PORT || 3000, () => {
     const port = server.address().port;
