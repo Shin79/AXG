@@ -2,6 +2,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var pg = require('pg');
 var app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 const dotenv = require('dotenv');
 dotenv.config();
 const uri = "postgres://gwbgsvnchhmloy:5fe63c0466c47df31d971056a3b30a240afb1c7812becfc919cbca208c4c6ef3@ec2-52-214-178-113.eu-west-1.compute.amazonaws.com:5432/d3bp6gumtmf0bi"
@@ -10,10 +12,10 @@ app.set('port', process.env.PORT || 3000);
 
 app.use(express.static('public'));
 app.use(bodyParser.json());
-
+console.log("Database_URL",process.env.DATABASE_URL);
 app.post('/update', function(req, res) {
     pg.connect(process.env.DATABASE_URL || uri, function (err, conn, done) {
-        console.log(process.env.DATABASE_URL);
+        
         // watch for any connect issues
         if (err) console.log(err);
         conn.query(
