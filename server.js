@@ -14,7 +14,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 console.log("Database_URL",process.env.DATABASE_URL);
 app.post('/update', function(req, res) {
-    pg.connect(process.env.DATABASE_URL || uri, function (err, conn, done) {
+    pg.connect(process.env.DATABASE_URL || uri, async function (err, conn, done) {
         
         // watch for any connect issues
         if (err) console.log(err);
@@ -58,10 +58,12 @@ app.get('/getContracts', function(req, res) {
             console.log(result)
             if (err) {
                 res.status(400).json({error: err.message});
+                res.end();
             }
             else {
                 // Need to display 'Success!'
                 res.json(result);
+                res.end();
             }
         });
         
