@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var pg = require('pg');
+pg.defaults.ssl = true;
 var app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
