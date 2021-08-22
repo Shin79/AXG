@@ -58,12 +58,12 @@ app.get('/getContracts', function(req, res) {
             console.log(result)
             if (err) {
                 res.status(400).json({error: err.message});
-                res.end();
+                return res.end();
             }
             else {
                 // Need to display 'Success!'
                 res.json(result);
-                res.end();
+                return res.end();
             }
         });
         
