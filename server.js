@@ -49,7 +49,7 @@ app.post('/update', function(req, res) {
 
 app.get('/getContracts', function(req, res) {
     pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
-        // watch for any connect issues
+        // Vérification des problèmes de connexion
         if (err) {
             console.log(err);
             return;
@@ -74,13 +74,13 @@ app.get('/getContracts', function(req, res) {
 app.get('/getProducts', function(req, res) {
         pg.connect(process.env.DATABASE_URL, function (err, conn, done) {
 
-        // watch for any connect issues
+        // Vérification des problèmes de connexion
         if (err) {
             console.log(err);
             return;
         }
 
-        conn.query('SELECT Name FROM salesforce.Product2 WHERE Name LIKE \'%Insurance%\' ',
+        conn.query('SELECT Name FROM salesforce.Product2 WHERE Name LIKE \'%Assurance%\' ',
         function(err, result) {
             console.log(result)
             if (err) {
