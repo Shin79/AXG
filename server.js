@@ -54,7 +54,7 @@ app.get('/getContracts', function(req, res) {
             console.log(err);
             return;
         }
-        conn.query('SELECT Name, Product_Name__c FROM salesforce.Contract WHERE Product__c IS NOT NULL',
+        conn.query('SELECT Name, Product__c FROM salesforce.Contract WHERE Product__c IS NOT NULL',
         function(err, result) {
             console.log(result)
             if (err) {
@@ -80,7 +80,7 @@ app.get('/getProducts', function(req, res) {
             return;
         }
 
-        conn.query('SELECT Name FROM salesforce.Product2 WHERE Name LIKE \'%Assurance%\' ',
+        conn.query('SELECT Name,Family FROM salesforce.Product2 WHERE Name LIKE \'%Assurance%\' ',
         function(err, result) {
             console.log(result)
             if (err) {

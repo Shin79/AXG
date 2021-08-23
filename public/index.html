@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CRM AXG</title>
+    <title>Application Mobile Legarant</title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
     <style>
@@ -91,9 +91,9 @@
                                 var cols = "";
                                
                                 var contractName = $("#name").val();
-                                var productName = $("#product_name__c").val();
+                                var productName = $("#product__c").val();
                                 cols += '<td> ' + row.name + '</td>';
-                                cols += '<td> ' + row.product_name__c + '</td>';
+                                cols += '<td> ' + row.product__c + '</td>';
                                 newRow.append(cols);
                                 $("#tableData tbody").append(newRow);
                          });
@@ -138,7 +138,9 @@
                                 var cols = "";
                                
                                 var productName = $("#name").val();
+                                var option = $("#family").val();
                                 cols += '<td> ' + row.name + '</td>';
+                                cols += '<td> ' + row.family + '</td>';
                                 newRow.append(cols);
                                 $("#tableProduct tbody").append(newRow);
                         });
@@ -173,24 +175,24 @@
         <form id="phoneChangerForm" action="/update" method="post" style="width: 400px">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Contact Information</h3>
+                    <h3 class="panel-title">Informations sur le contact</h3>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="For verification" required>
+                        <label for="firstName">Prénom</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="ex: Pierre" required>
                     </div>
                     <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="For verification" required>
+                        <label for="lastName">Nom de famille</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="ex: Dupont" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" placeholder="For verification" required>
+                        <input type="email" class="form-control" id="email" placeholder="mon@email.com" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="New Phone Number" required>
+                        <label for="phone">Téléphone (Mobile ou Fixe)</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="0123456789" required>
                     </div>
                 </div>
                 <div class="panel-footer">
@@ -203,7 +205,7 @@
                         <span class="sr-only">Error:</span>
                         <span id="errorMessage"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update Contact</button>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
                 </div>
             </div>
         </form>
@@ -222,15 +224,15 @@
         <form id="getContractForm" action="/getContracts" method="get" style="width: 400px">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Contract List</h3>
+                    <h3 class="panel-title">Contrats</h3>
                 </div>
                 <div id="panel" class="panel-body">
                     <!-- display retrieve contracts result-->
                     <table id="tableData" class="table table-fixed">
                         <tbody class="tbody">
                             <tr>
-                                <th>Contract Name</th>
-                                <th>Product Name</th>
+                                <th>Nom du contrat</th>
+                                <th>Référence du contrat</th>
                             </tr>
 
                         </tbody>
@@ -249,7 +251,7 @@
                         <span class="sr-only">Error:</span>
                         <span id="errorMessage"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Retrieve Contracts</button>
+                    <button type="submit" class="btn btn-primary">Voir les contrats d'assurance</button>
                 </div>
             </div>
         </form>
@@ -258,7 +260,7 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="/">CRM AXG</a>
+                <a class="navbar-brand" href="/">Application mobile Legarant</a>
             </div>
         </div>
     </nav>
@@ -268,14 +270,15 @@
         <form id="getProductForm" action="/getProducts" method="get" style="width: 400px">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Product List</h3>
+                    <h3 class="panel-title">Produits d'assurance Legarant</h3>
                 </div>
                 <div id="panel" class="panel-body">
                     <!-- display retrieve contracts result-->
                     <table id="tableProduct" class="table fixed-product">
                         <tbody class="tbody">
                             <tr>
-                                <th>Product Name</th>
+                                <th>Nom du produit</th>
+                                <th>Option du produit</th>
                             </tr>
 
                         </tbody>
@@ -291,7 +294,7 @@
                         <span class="sr-only">Error:</span>
                         <span id="errorMessage"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary">Retrieve Products</button>
+                    <button type="submit" class="btn btn-primary">Voir les produits d'assurance</button>
                 </div>
             </div>
         </form>
