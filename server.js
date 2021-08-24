@@ -14,6 +14,36 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 console.log("Database_URL",process.env.DATABASE_URL);
+
+app.post('/contact/authent', function(req, res) {
+	pg.connect(process.env.DATABASE_URL || uri, async function (err, conn, done) {
+		// watch for any connect issues
+		if (err) console.log(err);
+		console.log('req.body : ' + JSON.stringify(req.body));
+		console.log('req.body.user:-' + req.body.user + '-');
+		console.log('req.body.pwd:-' + req.body.pwd + '-');
+		conn.query(
+			'SELECT Id, FirstName, LastName, Email, Phone, SfId FROM salesforce.Contact WHERE LOWER(Email) = LOWER($1) AND MobileAppPwd__c = ($2)',
+			[req.body.user.trim(), req.body.pwd.trim()],
+			function(err, result) {
+				done();
+				if (err != null || result.rowCount == 0) {
+					// authentication failed
+					if (result.rowCount == 0) {
+						res.status(403).json({error: 'User/Password not found'});
+					} else {
+						res.status(400).json({error: err.message});
+					}
+				}
+				else {
+					// authentication success
+					res.json(result);
+				}
+			}
+		);
+	});
+});
+
 app.post('/update', function(req, res) {
     pg.connect(process.env.DATABASE_URL || uri, async function (err, conn, done) {
         

@@ -63,8 +63,80 @@
 
     </script>
 
-    <!-- CONTRACT LIST SCRIPT -->
     <script>
+        var contactId;
+		$(function () {
+			var contactInformationForm = $("#phoneChangerForm");
+			contactInformationForm.hide();
+			var contractsList = $("#getContractForm");
+			contractsList.hide();
+			var productsList = $("#getProductForm");
+			productsList.hide();
+		});
+        $(function() {
+            // Récupération et affichage du formulaire d'authentification
+			$("#authenticationForm").submit(function(event) {
+				console.log('Dans authent');
+				event.preventDefault();
+				var user = $("#user").val();
+				var pwd = $("#pwd").val();
+				var errorAuthentMessage = $("#errorAuthentMessage");
+				var errorAuthent = $("#errorAuthent");
+				errorAuthent.hide();
+				$("#messageAuthent").hide();
+
+				console.log('User : ' + user);
+				console.log('Pwd : ' + pwd);
+				if (user.length == 0 || pwd.length == 0) {
+					errorAuthentMessage.text("User and Password fields are required.");
+					errorAuthent.show();
+				} else {
+					$.ajax({
+						url: event.target.action,
+						method: event.target.method,
+						data: JSON.stringify({
+							user: user,
+							pwd: pwd,
+						}),
+						contentType: "application/json; charset=utf-8",
+						dataType: "json",
+						success: function(data) {
+							console.log('data:'+JSON.stringify(data));
+							$("#messageAuthentMessage").text("Authentication success !");
+							$("#messageAuthent").show();
+							var authenticationForm = $("#authenticationForm");
+							authenticationForm.delay(800).slideUp(300);
+							initAndShowContactForm($("#phoneChangerForm"), data);
+						},
+						error: function(err) {
+							errorAuthentMessage.text(err.responseJSON.error);
+							errorAuthent.show();
+						}
+					})
+				}
+			});
+		});
+
+        // Récupération des informations du contact
+        function initAndShowContactForm($param, $data) {
+			$param.delay(1100).fadeIn(400);
+			$("#firstName").val($data.rows[0].firstname);
+			$("#lastName").val($data.rows[0].lastname);
+			$("#email").val($data.rows[0].email);
+			$("#phone").val($data.rows[0].phone);
+			contactId = $data.rows[0].sfid;
+			console.log('ContactId:'+contactId);
+			// On affiche les contrats
+			var contractsList = $("#getContractForm");
+			contractsList.delay(1200).fadeIn(400);
+			
+			// On affiche les produits
+			var productsList = $("#getProductForm");
+			productsList.delay(1300).fadeIn(400);
+			
+		}
+
+        // Récupération et affichage des contrats
         $(function() {
             $("#getContractForm").submit(function(event) {
                 event.preventDefault();
@@ -112,7 +184,7 @@
 
     </script>
 
-    <!-- PRODUCT LIST SCRIPT -->
+    <!-- Récupération et affichage des produits -->
     <script>
         $(function() {
             $("#getProductForm").submit(function(event) {
@@ -162,6 +234,46 @@
 
 </head>
 <body>
+    <!--Formulaire d'identification-->
+    <div class="container">
+		<form id="authenticationForm" action="/contact/authent" method="post" style="width: 400px">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-md-2">
+							<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-shield-lock-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+								<path fill-rule="evenodd" d="M5.187 1.025C6.23.749 7.337.5 8 .5c.662 0 1.77.249 2.813.525a61.09 61.09 0 0 1 2.772.815c.528.168.926.623 1.003 1.184.573 4.197-.756 7.307-2.367 9.365a11.191 11.191 0 0 1-2.418 2.3 6.942 6.942 0 0 1-1.007.586c-.27.124-.558.225-.796.225s-.526-.101-.796-.225a6.908 6.908 0 0 1-1.007-.586 11.192 11.192 0 0 1-2.417-2.3C2.167 10.331.839 7.221 1.412 3.024A1.454 1.454 0 0 1 2.415 1.84a61.11 61.11 0 0 1 2.772-.815zm3.328 6.884a1.5 1.5 0 1 0-1.06-.011.5.5 0 0 0-.044.136l-.333 2a.5.5 0 0 0 .493.582h.835a.5.5 0 0 0 .493-.585l-.347-2a.5.5 0 0 0-.037-.122z"/>
+							</svg>
+						</div>
+						<div class="col-md-10">
+							<h3 class="panel-title">Authentication</h3>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label for="user">Email</label>
+						<input type="email" class="form-control" id="user" placeholder="Enter your email" required>
+					</div>
+					<div class="form-group">
+						<label for="pwd">Password</label>
+						<input type="password" class="form-control" id="pwd" placeholder="Enter your password" required>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div id="messageAuthent" class="alert alert-info" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+						<span id="messageAuthentMessage"></span>
+					</div>
+					<div id="errorAuthent" class="alert alert-danger" role="alert" style="display: none;">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+						<span class="sr-only">Error:</span>
+						<span id="errorAuthentMessage"></span>
+					</div>
+					<button type="submit" class="btn btn-primary">Validate</button>
+				</div>
+			</div>
+		</form>
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -170,7 +282,7 @@
         </div>
     </nav>
 
-    <!-- CONTACT INFORMATION-->
+    <!-- Informations du contact-->
     <div class="container">
         <form id="phoneChangerForm" action="/update" method="post" style="width: 400px">
             <div class="panel panel-default">
@@ -211,7 +323,7 @@
         </form>
     </div>
 
-    <!-- CONTRACT LIST-->
+    <!--Liste des contrats-->
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -265,7 +377,7 @@
         </div>
     </nav>
 
-    <!-- PRODUCT LIST-->
+    <!-- Liste des produits-->
     <div class="container">
         <form id="getProductForm" action="/getProducts" method="get" style="width: 400px">
             <div class="panel panel-default">
