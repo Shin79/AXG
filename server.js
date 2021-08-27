@@ -29,7 +29,7 @@ app.post('/contact/authent', function(req, res) {
 		console.log('req.body.pwd:-' + req.body.pwd + '-');
         // On fait la requête 
 		conn.query(
-			'SELECT Id, FirstName, LastName, Email, Phone, SfId FROM salesforce.Contact WHERE LOWER(Email) = LOWER($1) AND MobileAppPwd__c = ($2)',
+			'SELECT Id, FirstName, LastName, Email, Phone, SfId, Unique_Id_Email__c FROM salesforce.Contact WHERE LOWER(Email) = LOWER($1) AND MobileAppPwd__c = ($2)',
             // On supprime les espaces
 			[req.body.user.trim(), req.body.pwd.trim()],
 			function(err, result) {
@@ -53,13 +53,13 @@ app.post('/contact/authent', function(req, res) {
 
 // On définit la route pour la mise à jour des contacts
 app.post('/update', function(req, res) {
-    pg.connect(process.env.DATABASE_URL || uri, async function (err, conn, done) {
+    pg.connect(process.env.DATABASE_URL || uri, function (err, conn, done) {
         
         // Vérification des problèmes de connexion
         if (err) console.log(err);
         // On met à jour les valeurs des entrées souhaitées
         conn.query(
-            'UPDATE salesforce.Contact SET Phone = $1, HomePhone = $1, MobilePhone = $1 WHERE LOWER(FirstName) = LOWER($2) AND LOWER(LastName) = LOWER($3) AND LOWER(Email) = LOWER($4)',
+            'UPDATE salesforce.Contact SET Phone = $1, MobilePhone = $1 WHERE LOWER(FirstName) = LOWER($2) AND LOWER(LastName) = LOWER($3) AND LOWER(Email) = LOWER($4)',
             [req.body.phone.trim(), req.body.firstName.trim(), req.body.lastName.trim(), req.body.email.trim()],
             function(err, result) {
                 // S'il n'y a pas de correspondance, on crée le contact
@@ -81,7 +81,6 @@ app.post('/update', function(req, res) {
                 else {
                     done();
                     res.json(result);
-                    console.log(res.json(result));
                 }
             }
         );
